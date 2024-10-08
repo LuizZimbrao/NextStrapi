@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { ProductShelf } from "@/components/ProductShelf";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,7 +29,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="flex flex-col justify-center items-center w-full">
+          <header className="flex justify-center items-center w-full p-6 border-b border-slate-200">
+            <h1 className="text-slate-500 font-bold text-xl">Brand</h1>
+          </header>
+          <div className="xl:container flex flex-col">
+            {children}
+            <ProductShelf />
+          </div>
+        </div>
       </body>
     </html>
   );

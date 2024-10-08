@@ -12,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+import Link from "next/link";
 
 export function ProductShelf() {
   const [products, setProducts] = useState([]);
@@ -43,7 +44,7 @@ export function ProductShelf() {
     }
   }
 
-  if (loading) return (
+  if (loading || !products.length) return (
     <Carousel
       opts={{
         align: "start",
@@ -84,18 +85,19 @@ export function ProductShelf() {
             product_url,
             product_name,
             product_price,
+            documentId,
           }: ProductData) => (
             <CarouselItem
               key={product_id}
               className="md:basis-1/3 lg:basis-1/3 mb-1"
             >
-              <div className="flex items-center justify-center min-h-32 cursor-pointer">
+              <Link href={`/${documentId}/p`} className="flex items-center justify-center min-h-32 cursor-pointer">
                 <CardItem
                   image={product_url[0]}
                   name={product_name}
                   price={product_price}
                 />
-              </div>
+              </Link>
             </CarouselItem>
           )
         )}

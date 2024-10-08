@@ -4,6 +4,7 @@ export type ProductData = {
   product_url: ProductImage[];
   product_name: string;
   product_price: number;
+  documentId: string;
 };
 
 export type ProductImage = {
