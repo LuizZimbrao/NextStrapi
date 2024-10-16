@@ -20,7 +20,7 @@ export default factories.createCoreRouter('api::review.review', {
             const res = await fetch('https://56jg9wigc1.execute-api.us-east-2.amazonaws.com/reviews', {
               method: 'POST',
               headers: {
-                "Content-Type": "accept/json"
+                "Content-Type": "application/json"
               },
               body: JSON.stringify({ fileKey })
             })
