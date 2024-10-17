@@ -3,6 +3,7 @@
  */
 
 import { factories } from '@strapi/strapi';
+import { uploadFile } from '../../../services/uploadFile';
 
 export default factories.createCoreRouter('api::review.review', {
   config: {
@@ -10,11 +11,11 @@ export default factories.createCoreRouter('api::review.review', {
       auth: false,
       middlewares: [
         async (ctx, next) => {
-          const { user } = ctx.request.body;
+          const { data: { user, image } } = ctx.request.body;
 
-          // const fileParsed = JSON.parse(image)
+          const fileParsed = JSON.parse(image ?? "{}")
 
-          const fileKey = `${user}.png`
+          const fileKey = `${user}-${fileParsed.name}`
 
           try {
             const res = await fetch('https://56jg9wigc1.execute-api.us-east-2.amazonaws.com/reviews', {
@@ -25,9 +26,9 @@ export default factories.createCoreRouter('api::review.review', {
               body: JSON.stringify({ fileKey })
             })
 
-            const json = await res.json()
+            const json = await res.json() as any
 
-            console.log('>>>', 's3 url', json);
+            await uploadFile(json?.signedUrl, fileParsed)
             
           } catch (error) {
             console.error(error);
