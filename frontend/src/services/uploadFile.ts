@@ -1,3 +1,5 @@
+'use client'
+
 export async function uploadFile(url: string, file: File) {
   try {
     await fetch(url, {

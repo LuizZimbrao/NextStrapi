@@ -1,33 +1,29 @@
 "use client";
+
 import { useState } from "react";
+import { getPresignedUrl } from "@/services/getPresignedUrl";
+import { setReviewInProduct } from "@/services/setReviewInProduct";
 
 type Reviewer = {
   user: string;
   comment: string;
-  image: string;
+  image: File | null;
 };
 
 export function ReviewsAndRates() {
   const [reviewer, setReviewer] = useState<Reviewer>({
     user: "",
     comment: "",
-    image: "",
+    image: null,
   });
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
   
-    const copyFile = {
-      name: file?.name,
-      type: file?.type,
-      size: file?.size,
-      lastModified: file?.lastModified,
-    }
-
     if (file) {
       setReviewer((currentState) => ({
         ...currentState,
-        image: JSON.stringify(copyFile),
+        image: file,
       }));
     }
   }
@@ -40,8 +36,11 @@ export function ReviewsAndRates() {
     const body = {
       data: {
         ...reviewer,
+        image: `${reviewer.user}-${reviewer.image?.name}`.toLocaleLowerCase().trim()
       },
     };
+
+    if (!reviewer.user || !reviewer.comment || !reviewer.image) return 
 
     try {
       const res = await fetch(`http://localhost:1337/api/reviews`, {
@@ -56,33 +55,20 @@ export function ReviewsAndRates() {
 
       if (!json?.data) return;
 
-      await setReviewInProduct(productId, json.data.documentId);
+      await setReviewInProduct(productId, json.data.documentId)
+      await getPresignedUrl(reviewer.user, reviewer.image)
     } catch (error) {
       console.error(error);
     } finally {
       setReviewer({
         user: "",
         comment: "",
-        image: "",
+        image: null,
       })
     }
   }
 
-  async function setReviewInProduct(productId: string, reviewId: string) {
-    await fetch(`http://localhost:1337/api/products/${productId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: {
-          reviews: {
-            connect: [{ documentId: reviewId, status: "published", end: true }],
-          },
-        },
-      }),
-    });
-  }
+
 
   return (
     <form
